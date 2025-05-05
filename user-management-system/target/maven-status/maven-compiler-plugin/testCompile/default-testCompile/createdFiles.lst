@@ -1,0 +1,5 @@
+com/ums/core/user_management_system/UserManagementSystemApplicationTests.class
+com/ums/core/user_management_system/service/UserServiceImplTest.class
+com/ums/core/user_management_system/controller/UserUserControllerTest.class
+com/ums/core/user_management_system/service/UserServiceImplTest$GetAllUsersTests.class
+com/ums/core/user_management_system/service/UserServiceImplTest$CreateUserTests.class

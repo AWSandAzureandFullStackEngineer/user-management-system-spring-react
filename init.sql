@@ -1,0 +1,4 @@
+-- init.sql
+CREATE USER admin WITH PASSWORD 'admin';
+CREATE DATABASE umsdb OWNER admin;
+GRANT ALL PRIVILEGES ON DATABASE umsdb TO admin;

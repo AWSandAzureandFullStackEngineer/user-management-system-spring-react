@@ -1,0 +1,13 @@
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/UserManagementSystemApplication.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/config/SecurityConfig.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/controller/UserController.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/dto/UserRequestDTO.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/dto/UserResponseDTO.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/entity/Role.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/entity/User.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/exception/DuplicateResourceException.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/mapper/UserMapper.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/repository/UserRepository.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/service/CustomUserDetailsService.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/service/UserService.java
+/Users/stevenmcdonald/Desktop/ums/user-management-system/src/main/java/com/ums/core/user_management_system/service/impl/UserServiceImpl.java

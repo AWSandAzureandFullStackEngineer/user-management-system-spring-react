@@ -1,0 +1,90 @@
+# docker-compose.yml
+# Defines the PostgreSQL database and Spring Boot application services for the User Management System.
+
+version: '3.8' # Specify a recent, stable docker-compose version
+
+services:
+  # Define the PostgreSQL database service
+  db:
+    image: postgres:16-alpine # Use a specific, recent, and lightweight PostgreSQL version
+    container_name: ums_postgres_db # Descriptive container name
+    environment:
+      # Configure database credentials and name using environment variables.
+      POSTGRES_USER: ${POSTGRES_USER:-ums_user} # Default username
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_password} # Default password - CHANGE THIS!
+      POSTGRES_DB: ${POSTGRES_DB:-user_management_db} # Default database name
+      PGDATA: /var/lib/postgresql/data/pgdata # Data directory within the volume
+    volumes:
+      # Mount a named volume for persistent data storage.
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      # Map host port (default 5432) to container port 5432 for external DB tools.
+      # The 'app' service connects internally via the 'db' service name.
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      # Checks if the database is ready to accept connections.
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-ums_user} -d $${POSTGRES_DB:-user_management_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks: # Define a network for services
+      - ums_network
+
+  # Define the Spring Boot application service
+  app:
+    # Build the application image using the Dockerfile in the current directory (.)
+    build:
+      context: ./user-management-system # Assumes Dockerfile is in the project root
+      dockerfile: Dockerfile
+    container_name: ums_spring_app # Descriptive container name
+    # Make the 'app' service wait for the 'db' service to be healthy before starting.
+    depends_on:
+      db:
+        condition: service_healthy # Waits for the db healthcheck to pass
+    ports:
+      # Map host port (default 8080) to the container's port 8080 (Spring Boot default).
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      # Pass database connection details to the Spring Boot application.
+      # It connects to the 'db' service name on the internal Docker network.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-user_management_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-ums_user}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-changeme_password}
+      # Configure JPA/Hibernate
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop # Automatically update schema (add tables/columns)
+      SPRING_JPA_SHOW_SQL: true             # Log executed SQL statements
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: true # Format the logged SQL
+      # Set Flyway properties (assuming Flyway will be used later)
+      SPRING_FLYWAY_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_FLYWAY_USER: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_FLYWAY_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      # Set the server port inside the container (redundant if using default 8080, but good practice)
+      SERVER_PORT: 8080
+      # Add any other necessary environment variables for your Spring app
+      # SPRING_PROFILES_ACTIVE: docker # Example: activate a specific Spring profile
+    restart: on-failure # Restart the application container if it exits with an error
+    networks: # Connect to the same network as the db
+      - ums_network
+
+volumes:
+  # Define the named volume used for persisting PostgreSQL data.
+  postgres_data:
+    driver: local
+
+networks:
+  # Define the custom bridge network
+  ums_network:
+    driver: bridge
+
+# --- How to Use ---
+# 1. Save this file as 'docker-compose.yml'.
+# 2. Create the 'Dockerfile' (provided separately).
+# 3. Create the Spring Boot project structure (pom.xml, src/*).
+# 4. Build the Spring Boot application JAR: ./mvnw clean package (or .\mvnw.cmd clean package)
+# 5. Optional: Create a '.env' file for environment variables.
+# 6. Run 'docker-compose up --build -d' to build images and start containers.
+# 7. Check status with 'docker-compose ps'.
+# 8. View logs with 'docker-compose logs -f app' or 'docker-compose logs -f db'.
+# 9. Stop with 'docker-compose down'. Add '-v' to remove the volume (docker-compose down -v).

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllUsersAPI } from '../api/userService';
 import { UserResponseDTO } from '../types/UserCreateDTO';
-import PageLayout from '../../../layouts/PageLayout';
 import UserListItem from '../components/UserListItem';
 
 const UserListPage: React.FC = () => {
@@ -10,7 +9,6 @@ const UserListPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // TODO: Add security for admin-only access with login
     useEffect(() => {
         const fetchUsers = async () => {
             setIsLoading(true);
@@ -21,87 +19,141 @@ const UserListPage: React.FC = () => {
             } catch (err) {
                 const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred while fetching users.';
                 setError(errorMessage);
-                setUsers([]); // Clear users on error
+                setUsers([]);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchUsers();
-    }, []); // Empty dependency array means this effect runs once on mount
+    }, []);
 
     const handleDeleteUser = (userId: string, username: string) => {
-        // TODO: Implement delete functionality
-
         alert(`TODO: Implement delete for user: ${username} (ID: ${userId})`);
     };
 
+    const layoutStyle: React.CSSProperties = {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        backgroundColor: '#111827', // Tailwind's gray-900
+        color: 'white',
+        padding: '2rem',
+    };
+
+    const titleStyle: React.CSSProperties = {
+        textAlign: 'center',
+        fontSize: '2rem',
+        fontWeight: 600,
+        marginBottom: '2rem',
+    };
 
     if (isLoading) {
         return (
-            <PageLayout title="User List">
-                <div className="text-center py-10">
-                    <p className="text-lg text-gray-600 dark:text-gray-400">Loading users...</p>
-                    {/* You can add a spinner component here */}
-                </div>
-            </PageLayout>
+            <div style={layoutStyle}>
+                <h1 style={titleStyle}>User List</h1>
+                <p style={{ textAlign: 'center' }}>Loading users...</p>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <PageLayout title="User List">
-                <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800 text-center" role="alert">
-                    <span className="font-medium">Error Fetching Users:</span> {error}
-                    <p className="mt-2 text-xs">
+            <div style={layoutStyle}>
+                <h1 style={titleStyle}>User List</h1>
+                <div style={{
+                    backgroundColor: '#FECACA', // Tailwind red-100
+                    color: '#7F1D1D', // Tailwind red-700
+                    padding: '1rem',
+                    borderRadius: '0.5rem',
+                    marginBottom: '1rem',
+                    textAlign: 'center',
+                }}>
+                    <strong>Error Fetching Users:</strong> {error}
+                    <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
                         This page requires ADMIN privileges. If you are not logged in as an admin,
-                        or if there's a network issue, this error will appear.
-                        Check console for more details.
+                        or if there's a network issue, this error will appear. Check the console for more details.
                     </p>
                 </div>
-                <div className="mb-6 flex justify-end">
+                <div style={{ textAlign: 'right' }}>
                     <Link
                         to="/users/create"
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-150"
+                        style={{
+                            backgroundColor: '#4F46E5',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '0.5rem',
+                            textDecoration: 'none',
+                        }}
                     >
                         + Create New User
                     </Link>
                 </div>
-            </PageLayout>
+            </div>
         );
     }
 
     return (
-        <PageLayout title="User List">
-            <div className="mb-6 flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200">All Registered Users</h2>
+        <div style={layoutStyle}>
+            <h1 style={titleStyle}>User List</h1>
+
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.5rem',
+            }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>All Registered Users</h2>
                 <Link
                     to="/users/create"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-150"
+                    style={{
+                        backgroundColor: '#4F46E5',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '0.5rem',
+                        textDecoration: 'none',
+                    }}
                 >
                     + Create New User
                 </Link>
             </div>
 
             {users.length === 0 ? (
-                <div className="text-center py-10 bg-white dark:bg-gray-800 shadow-md rounded-lg">
-                    <p className="text-lg text-gray-600 dark:text-gray-400">No users found.</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-2">Try creating some users first!</p>
+                <div style={{
+                    backgroundColor: '#1F2937', // dark background
+                    padding: '2rem',
+                    borderRadius: '0.5rem',
+                    textAlign: 'center',
+                }}>
+                    <p>No users found.</p>
+                    <p style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>Try creating some users first!</p>
                 </div>
             ) : (
-                <div className="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
+                <div style={{
+                    backgroundColor: '#1F2937',
+                    borderRadius: '0.5rem',
+                    overflowX: 'auto',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead style={{ backgroundColor: '#374151' }}>
                         <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Username</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                            {['Username', 'Email', 'Name', 'Phone', 'Status', 'Actions'].map((header) => (
+                                <th key={header} style={{
+                                    textAlign: 'left',
+                                    padding: '1rem',
+                                    fontSize: '0.75rem',
+                                    textTransform: 'uppercase',
+                                    color: '#D1D5DB',
+                                }}>
+                                    {header}
+                                </th>
+                            ))}
                         </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody>
                         {users.map((user) => (
                             <UserListItem key={user.id} user={user} onDelete={handleDeleteUser} />
                         ))}
@@ -109,7 +161,7 @@ const UserListPage: React.FC = () => {
                     </table>
                 </div>
             )}
-        </PageLayout>
+        </div>
     );
 };
 

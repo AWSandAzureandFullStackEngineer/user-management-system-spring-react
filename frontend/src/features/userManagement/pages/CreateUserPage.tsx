@@ -24,7 +24,7 @@ const CreateUserPage: React.FC = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 minHeight: '100vh',
-                backgroundColor: '#111827', // Tailwind's gray-900
+                backgroundColor: '#111827', // Tailwind gray-900
                 color: 'white',
                 padding: '1rem',
             }}
